@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <bean id="hs" class="com.wzl.exer.start.HelloSpringImpl"></bean>
+    <!--Sring装配Bean的三种形式-->
+    <!--(1)	使用构造函数(有无参的构造函数)-->
+    <bean id="bean1" class="com.wzl.exer.create.Bean1"></bean>
+    <!--(2) 使用静态工厂方法-->
+    <bean id="clientService" class="com.wzl.exer.create.ClientService" factory-method="createInstance"></bean>
+    <!--(3) 使用实例化工厂方法-->
+    <bean id="userServiceFactory" class="com.wzl.exer.create.UserServiceFactory"></bean>
+    <bean id="userService" factory-method="getUserService" factory-bean="userServiceFactory"></bean>
+
+    <!--单例模式-->
+    <!--<bean id="product" class="com.wzl.scope.Product" scope="singleton"></bean>-->
+    <!--多例模式-->
+    <bean id="product" class="com.wzl.exer.create.Product" scope="prototype"></bean>
+
+
+    <!--当Spring遇到这个<bean>元素时，它会创建一个CDPlayer实例。<constructor-arg>
+    元素会告知Spring要将一个ID为compactDisc的bean引用传递到CDPlayer的构造器中。-->
+<!--    <bean id="cdPlayer" class="com.wzl.spring.chap2.xmlconfig.CDPlayer">
+        &lt;!&ndash;<constructor-arg>元素进行构造器参数的注入,
+        使用value属性表明给定的值要以字面量的形式注入到构造器之中&ndash;&gt;
+        <constructor-arg ref="compactDisc" />
+    </bean>-->
+    <bean id="cdPlayer" class="com.wzl.spring.chap2.xmlconfig.CDPlayer">
+    </bean>
+
+<!--    <bean id="cdPlayer" class="com.wzl.spring.chap2.xmlconfig.CDPlayer" c:_0-ref="compactDisc">
+    </bean>-->
+
+<!--
+    <bean id="cdPlayer" class="com.wzl.spring.chap2.xmlconfig.CDPlayer" c:_-ref="compactDisc">
+    </bean>
+-->
+
+
+<!--<bean id="compactDisc" class="com.wzl.spring.chap2.xmlconfig.BlankDisc">
+        &lt;!&ndash;<constructor-arg>元素进行构造器参数的注入,
+        使用value属性表明给定的值要以字面量的形式注入到构造器之中&ndash;&gt;
+        <constructor-arg value="Love Yourself" />
+        <constructor-arg value="Eric Nam" />
+    </bean>-->
+
+    <!--c-命名空间-->
+    <!--第一种方案是引用构造器参数的名字：-->
+    <bean id="compactDisc" class="com.wzl.spring.chap2.xmlconfig.BlankDisc"
+          c:title="Love Yourself" c:artist="Eric Nam" c:tracks=""/>
+    <!--第二种通过参数索引装配相同的字面量值-->
+<!--    <bean id="compactDisc" class="com.wzl.spring.chap2.xmlconfig.BlankDisc"
+          c:_0="Love Yourself" c:_1="Eric Nam" />-->
+
+    <!--给BlankDisc新增参数track后的的配置-->
+<!--    <bean id="compactDisc" class="com.wzl.spring.chap2.xmlconfig.BlankDisc">
+        <constructor-arg value="Love Yourself" />
+        <constructor-arg value="Eric Nam" />
+        <constructor-arg>
+            <list>
+                <value>歌曲1</value>
+                <value>歌曲2</value>
+                <value>歌曲3</value>
+            </list>
+        </constructor-arg>
+    </bean>-->
+<!--    <bean id="compactDisc" class="com.wzl.spring.chap2.xmlconfig.BlankDisc">
+        <constructor-arg value="Love Yourself" />
+        <constructor-arg value="Eric Nam" />
+        <constructor-arg>
+            &lt;!&ndash;是Set的话，所有重复的值都会被忽略掉，存放顺序也不会得以保证。&ndash;&gt;
+            <set>
+                <value>歌曲1</value>
+                <value>歌曲2</value>
+                <value>歌曲3</value>
+            </set>
+        </constructor-arg>
+    </bean>-->
+    <!--案例一 ：利用Spring配置DBCP数据库连接池-->
+<!--    <bean id="myDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/mydb"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="root"></property>
+    </bean>-->
+    <!--p命名空间进行简化-->
+    <bean id="myDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
+        p:driverClassName="com.mysql.jdbc.Driver"
+        p:url="jdbc:mysql://localhost:3306/mydb"
+        p:username="root"
+        p:password="root">
+    </bean>
+
+    <!--p命名空间的使用-->
+<!--    <bean id="blankDisc2" class="com.wzl.spring.chap2.xmlconfig.BlankDisc"
+        p:title="Love Yourself"></bean>-->
+
+    <!--集合属性的注入-->
+    <bean id="collectionBean" class="com.wzl.exer.create.CollectionBean">
+        <property name="hobby">
+            <list>
+                <value>睡觉</value>
+                <value>听歌</value>
+                <value>写代码</value>
+                <!--如果是复杂对象 可以使用ref引入另外的一个对象-->
+                <!--<ref bean="myDataSource" />-->
+            </list>
+        </property>
+
+        <property name="numbers">
+            <set>
+                <value>10</value>
+                <value>20</value>
+            </set>
+        </property>
+
+        <property name="map">
+            <map>
+                <entry key="username" value="小王"></entry>
+                <entry key="age" value="18"></entry>
+            </map>
+        </property>
+        <property name="properties">
+            <props>
+                <prop key="address">浙江杭州</prop>
+                <prop key="email">17364263476@163.com</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!--属性的合并-->
+    <bean id="parent" class="com.wzl.exer.create.Parent" abstract="true">
+        <property name="adminEmails">
+            <props>
+                <prop key="admin">admin@163.com</prop>
+                <prop key="sales">sales@163.com</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="child" parent="parent">
+        <property name="adminEmails">
+            <props merge="true">
+                <prop key="support">support@163.com</prop>
+                <prop key="sales">sales@163.com</prop>
+            </props>
+        </property>
+    </bean>
+    <!--开启注解开发 同时配置注解所在的包-->
+    <context:annotation-config/><!--开启注解-->
+    <context:component-scan base-package="com.wzl.dao;com.wzl.controller;com.wzl.service"></context:component-scan><!--扫描注解所在的包-->
+
+    <bean id="customerDAO" class="com.wzl.dao.CustomerDAO"></bean>
+    <bean id="customerService" class="com.wzl.service.CustomerService">
+        <property name="customerDAO" ref="customerDAO"></property>
+    </bean>
+
+    <!--方式二：可以在一个总的配置文件中 引入其他的配置文件的信息-->
+    <import resource="classpath:spring-config2.xml"/>
+
+</beans>
