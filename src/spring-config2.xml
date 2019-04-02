@@ -1,12 +1,120 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:c="http://www.springframework.org/schema/c"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd ">
 
     <!--对Bean定义别名-->
     <alias name="person" alias="personHello"></alias>
+
+<!--    &lt;!&ndash;1:不需要切点的切面 使用advice目标方法进行增强=========================&ndash;&gt;
+    &lt;!&ndash;1.1被代理的对象&ndash;&gt;
+    <bean id="stuDAO" class="com.wzl.dao.impl.StuDAOImpl"></bean>
+
+    &lt;!&ndash;1.2增强&ndash;&gt;
+    <bean id="myMethodBeforeAdvice" class="com.wzl.service.MyMethodBeforeAdvice"></bean>-->
+
+    <!--&lt;!&ndash;1.3创建代理&ndash;&gt;-->
+    <!--<bean id="stuDAOProxy" class="org.springframework.aop.framework.ProxyFactoryBean">-->
+        <!--&lt;!&ndash;目标&ndash;&gt;-->
+        <!--<property name="target" ref="stuDAO"></property>-->
+        <!--&lt;!&ndash;针对类还是接口代理&ndash;&gt;-->
+        <!--&lt;!&ndash;如果是有的对象已经定义可以ref引用&ndash;&gt;-->
+        <!--&lt;!&ndash;如果没有定义需要使用value进行创建新的对象&ndash;&gt;-->
+        <!--<property name="proxyInterfaces" value="com.wzl.dao.StuDAO"></property>-->
+        <!--&lt;!&ndash;增强&ndash;&gt;-->
+        <!--<property name="interceptorNames" value="myMethodBeforeAdvice"></property>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash;end.不需要切点的切面==================================&ndash;&gt;-->
+
+    <!--&lt;!&ndash;带有切点的切面 对指定的目标方法进行增强======================&ndash;&gt;-->
+    <!--&lt;!&ndash;1.1被代理对象&ndash;&gt;-->
+    <!--<bean id="teacherDAO" class="com.wzl.dao.TeacherDAO"></bean>-->
+    <!--&lt;!&ndash;1.2增强&ndash;&gt;-->
+    <!--<bean id="myMethodInterceptor" class="com.wzl.service.MyMethodInterceptor"></bean>-->
+    <!--&lt;!&ndash;1.3定义切点切面&ndash;&gt;-->
+    <!--<bean id="myAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">-->
+        <!--<property name="advice" ref="myMethodInterceptor"></property>-->
+        <!--<property name="patterns" value=".*save.*,.*update.*"></property>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash;1.4创建代理&ndash;&gt;-->
+    <!--<bean id="teacherDAOProxy" class="org.springframework.aop.framework.ProxyFactoryBean">-->
+        <!--<property name="target" ref="teacherDAO"></property>-->
+        <!--&lt;!&ndash;针对接口还是类代理&ndash;&gt;-->
+        <!--<property name="proxyTargetClass" value="true"></property>-->
+        <!--&lt;!&ndash;增强&ndash;&gt;-->
+        <!--<property name="interceptorNames" value="myAdvisor"></property>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash;end.带有切点的切面=====================================&ndash;&gt;-->
+
+    <!--1:不需要切点的切面 自动增强=========================-->
+    <!--1.1被代理的对象-->
+<!--    <bean id="stuDAO" class="com.wzl.dao.impl.StuDAOImpl"></bean>
+    <bean id="teacherDAO" class="com.wzl.dao.TeacherDAO"></bean>
+    &lt;!&ndash;1.2增强&ndash;&gt;
+    <bean id="myMethodBeforeAdvice" class="com.wzl.service.MyMethodBeforeAdvice"></bean>
+    <bean id="myMethodInterceptor" class="com.wzl.service.MyMethodInterceptor"></bean>
+    &lt;!&ndash;1.3创建代理&ndash;&gt;
+    &lt;!&ndash;第一种形式自动代理使用 BeanNameAutoProxyCreator&ndash;&gt;
+    &lt;!&ndash;后处理bean 可以不配置id&ndash;&gt;
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="*.DAO"></property>
+        <property name="interceptorNames" value="myMethodInterceptor"></property>
+    </bean>-->
+    <!--end.不需要切点的切面=====================================-->
+
+
+
+    <!--带有切点的切面 自动代理======================-->
+    <!--1.1被代理的对象-->
+<!--    <bean id="stuDAO" class="com.wzl.dao.impl.StuDAOImpl"></bean>
+    <bean id="teacherDAO" class="com.wzl.dao.TeacherDAO"></bean>
+    &lt;!&ndash;1.2增强&ndash;&gt;
+    <bean id="myMethodBeforeAdvice" class="com.wzl.service.MyMethodBeforeAdvice"></bean>
+    <bean id="myMethodInterceptor" class="com.wzl.service.MyMethodInterceptor"></bean>
+    &lt;!&ndash;1.3定义切点切面&ndash;&gt;
+    <bean id="myAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+        <property name="advice" ref="myMethodBeforeAdvice"></property>
+        &lt;!&ndash;只要针对teacherDAO的delete 以及所有的dave add方法进行增强&ndash;&gt;
+        <property name="patterns" value="com\.wzl\.dao\.TeacherDAO\.delete.*,.*save.*,.*add.*"></property>
+    </bean>
+    &lt;!&ndash;创建代理&ndash;&gt;
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"></bean>
+    --><!--end.带有切点的切面=====================================-->
+
+    <!--使用AspectJ实现AOP(基于注解的aop:aspectj-autoproxy方式)===========================-->
+    <!--1.导入aspectjweaver.jar包 2.导入spring的aop的命名空间-->
+    <!--3.开启AspceJ自动代理-->
+    <aop:aspectj-autoproxy/>
+    <context:annotation-config/>
+    <context:component-scan base-package="com.wzl.dao;com.wzl.service;com.wzl.controller"></context:component-scan>
+
+
+    <!--代理对象-->
+    <bean id="productDAO" class="com.wzl.dao.ProductDAO"></bean>
+
+    <!--切面-->
+    <bean id="myAspect" class="com.wzl.service.MyAspect"></bean>
+
+    <!--配置xml 使用AspectJ 配置AOP-->
+    <aop:config>
+        <aop:aspect ref="myAspect">
+            <!--切点-->
+            <aop:pointcut id="mypointcut" expression="execution(* com.wzl.dao.ProductDAO.*(..))"></aop:pointcut>
+            <!--增强 通知advice-->
+            <aop:before method="beforeMethod" pointcut-ref="mypointcut"></aop:before>
+            <aop:after-returning method="afterMethod" pointcut-ref="mypointcut"></aop:after-returning>
+            <aop:around method="aroundMethod" pointcut-ref="mypointcut"></aop:around>
+        </aop:aspect>
+    </aop:config>
+
+
+
 
 </beans>

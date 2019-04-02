@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+    <bean id="studentDAO" class="com.wzl.dao.StudentDAO">
+        <property name="jdbcTemplate" ref="jdbcTemplate"></property>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--方式一 配置数据库连接池 使用Spring内置的数据库连接池 DriverManagerData mysql-connector-java-5.0.8-bin-->
+<!--    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="username" value="root"></property>
+        <property name="password" value="root"></property>
+        <property name="url" value="jdbc:mysql:/localhot:3306/wzl"></property>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+    </bean>-->
+
+    <!--方式二 会用DBCP数据库连接池commons-dbcp-1.4/commons-pool-1.6/commons-logging-1.1.1-->
+<!--    <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="${jdbc.driverClasName}"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>-->
+
+    <!--使用C3P0数据库连接池c3p0-0.9.5.2/mchange-commons-java-0.2.14-->
+    <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc.driverClasName}"></property>
+        <property name="jdbcUrl" value="${jdbc.url}"></property>
+        <property name="user" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+
+    <!--Spring编程式 事务管理TransactionTemplate==============s==========-->
+    <!--业务层-->
+<!--    <bean id="accountService" class="com.wzl.service.impl.AccountServiceImpl">
+        <property name="accountDAO" ref="accountDAO"></property>
+        <property name="transactionTemplate" ref="transactionTemplate"></property>
+    </bean>-->
+    <!--DAO层-->
+<!--    <bean id="accountDAO" class="com.wzl.dao.impl.AccountDAOImpl">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>-->
+    <!--事物管理模版-->
+    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <!--将管理器注入模版-->
+        <property name="transactionManager" ref="transactionManager"></property>
+    </bean>
+    <!--事务管理器-->
+    <!--<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
+        <!--&lt;!&ndash;把连接池注入到事物管理器中&ndash;&gt;-->
+        <!--<property name="dataSource" ref="dataSource"></property>-->
+    <!--</bean>-->
+    <!--Spring编程式 事务管理TransactionTemplate=============e===========-->
+
+
+    <!--Spring声明式事务管理(TransactionProxyFactoryBean)================S=============-->
+    <!--业务层-->
+<!--    <bean id="accountService" class="com.wzl.service.impl.AccounterviceImpl2">
+        <property name="accountDAO" ref="accountDAO"></property>
+    </bean>-->
+    <!--DAO层-->
+<!--    <bean id="accountDAO" class="com.wzl.dao.impl.AccountDAOImpl">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>-->
+    <!--声明式事务管理 事务管理器-->
+<!--    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        &lt;!&ndash;把连接池注入到事物管理器中&ndash;&gt;
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>-->
+    <!--为AccountService 创建代理-->
+<!--    <bean id="accountServiceProcy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        &lt;!&ndash;被代理的对象&ndash;&gt;
+        <property name="target" ref="accountService"></property>
+        &lt;!&ndash;针对类还是接口代理&ndash;&gt;
+        <property name="proxyInterfaces" value="com.wzl.service.AccountService"></property>
+        &lt;!&ndash;增强&ndash;&gt;
+        <property name="transactionManager" ref="transactionManager"></property>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="transfer">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>-->
+
+    <!--Spring声明式事务管理(TransactionProxyFactoryBean)================E=============-->
+    <!--业务层-->
+    <bean id="accountService" class="com.wzl.service.impl.AccounterviceImpl2">
+        <property name="accountDAO" ref="accountDAO"></property>
+    </bean>
+    <!--DAO层-->
+    <bean id="accountDAO" class="com.wzl.dao.impl.AccountDAOImpl">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--声明式事务管理 事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--把连接池注入到事物管理器中-->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+
+</beans>
